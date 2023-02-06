@@ -26,6 +26,9 @@ public class JobService {
     @Value("${find.all.job.url}")
     private String getAllJobUrl;
 
+    @Value("${find.job.detail}")
+    private String getJobDetail;
+
     public List<JobDto> findAllJob() throws JsonProcessingException {
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(getAllJobUrl).build();
         ResponseEntity<String> response = restTemplate.exchange(
@@ -44,7 +47,18 @@ public class JobService {
         return jobDtoList;
     }
 
-    public String findJobById(String id){
-        return "";
+    public JobDto findJobById(String id){
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(getJobDetail).build();
+        uriComponents = uriComponents.expand(id);
+
+        ResponseEntity<JobDto> response = restTemplate.exchange(
+                uriComponents.toUriString(),
+                HttpMethod.GET,
+                null,
+                JobDto.class
+        );
+
+        log.info(String.valueOf(response));
+        return response.getBody();
     }
 }
